@@ -15,6 +15,7 @@ async def on_ready():
 
 
 queue = []
+displayQueue = []
 @bot.command()
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
@@ -62,8 +63,7 @@ async def leave(ctx):
     else:
         await ctx.send(f"{itsNothing()}???")       
 
-#this is stupid
-displayQueue = []
+
 @bot.command()
 async def fila(ctx):
     message = f"{itsNothing()}:\n ```\n"
