@@ -20,9 +20,12 @@ async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
     if not ctx.voice_client:
         await voiceChannel.connect()
-    
+
+    video = YouTube(busca(url))
     if ctx.voice_client.is_playing():
+
         queue.append(busca(url))
+        displayQueue.append(video.title)
 
     if not ctx.voice_client.is_playing():
         video = YouTube(busca(url))
@@ -33,7 +36,6 @@ async def play(ctx, *, url):
         await ctx.send(f"{itsNothing()} -> {video.title}")
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: play_next(ctx))
 
-    
  
 def play_next(ctx):
     print("playing next...")
@@ -60,12 +62,15 @@ async def leave(ctx):
     else:
         await ctx.send(f"{itsNothing()}???")       
 
-
+#this is stupid
+displayQueue = []
 @bot.command()
 async def fila(ctx):
-    await ctx.send(f"{itsNothing()}: {queue}")       
-
-
+    message = f"{itsNothing()}:\n ```\n"
+    for i in range(len(displayQueue)):
+        message += f"{i + 1} - {displayQueue[i]}\n"
+    await ctx.send(message + '\n```')
+          
 
 @bot.event
 async def on_message(message):
