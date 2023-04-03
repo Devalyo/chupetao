@@ -24,11 +24,6 @@ def busca(query, search=False):
          for item in range(10):
               videoList.append(f"https://www.youtube.com/watch?v={pesquisa[item].video_id}")
          return videoList
+    
     videoUrl = f"https://www.youtube.com/watch?v={pesquisa[0].video_id}"
     return videoUrl
-
-
-
-def itsNothing():
-    nothings = ('tuc ' * (random.randint(0,20)) + 'tuc')
-    return nothings
