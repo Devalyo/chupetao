@@ -16,6 +16,7 @@ def get_url():
     vid_id     = results['items'][0]['id']['videoId']
     return f"https://www.youtube.com/watch?v={vid_id}"  
 
+
 def busca(query, search=False):
 
     pesquisa = Search(query).results
