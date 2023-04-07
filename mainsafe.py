@@ -23,9 +23,25 @@ async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
     if not ctx.voice_client:
         await voiceChannel.connect()
+        if random.randrange(1, 100) > 50:    
+                video = YouTube(busca(url))
+                if video.length > 1800:
+                        mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
+                        await asyncio.sleep(8)
+                        await mensagem.edit(content=tuc())
+                        return
+                queue.append(busca(url))
+                try:
+                    displayQueue.append(video.title)
+                except:
+                    asyncio.sleep(3)
+                    displayQueue.append(video.title)
+                ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
+                return
 
-    video = YouTube(busca(url))
+    
     if ctx.voice_client.is_playing():
+        video = YouTube(busca(url))
         if video.length > 1800:
                 mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
                 await asyncio.sleep(8)
@@ -60,12 +76,16 @@ async def play(ctx, *, url):
             audio_stream.download(output_path='audio', filename=f"{title}.mp4")
         await ctx.send(f"{tuc()} 🎶▶ {video.title}")
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
+         
 
- 
+
 def PlayNext(ctx):
 
     print("playing next...")
-    if len(queue) > 0:
+    if random.randrange(1,100) > 80:
+        ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
+        return
+    if len(queue) > 0: 
         url = queue.pop(0)
         displayQueue.pop(0)
         video = YouTube(url)
@@ -120,7 +140,7 @@ async def fila(ctx):
         message += f"{i + 1} - {displayQueue[i]}\n"
     await ctx.send(message + '\n```')
           
-
+nameList = ["chupetas", "chupetão", "chupetao", "chupetasso", "chupetola"]
 @bot.event
 async def on_message(message):
      if message.author == bot.user:
@@ -128,7 +148,7 @@ async def on_message(message):
          return
      
      text = str(message.content).lower()
-     if 'chupetao' in text or 'chupetas' in text or 'chupetasso' in text:
+     if any(word in text for word in nameList):
          if 'video' in text:
             await message.channel.send(get_url())
          mensagem = tuc(beast=True)
@@ -139,6 +159,10 @@ async def on_message(message):
      else:
          await bot.process_commands(message)
          return
+     
+
+def chups(ctx):
+    ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp3", options=FFMPEG_OPTIONS))
 
 
 bot.run('')
