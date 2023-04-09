@@ -23,7 +23,7 @@ async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
     if not ctx.voice_client:
         await voiceChannel.connect()
-        if random.randrange(1, 100) <= 40:    
+        if random.randrange(1, 100) <= 100:    
                 video = YouTube(busca(url))
                 if video.length > 1800:
                         mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
