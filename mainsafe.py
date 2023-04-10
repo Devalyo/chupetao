@@ -21,9 +21,10 @@ displayQueue = []
 @bot.command()
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
+    global last_played_time
     if not ctx.voice_client:
         await voiceChannel.connect()
-        if random.randrange(1, 100) <= 100:    
+        if random.randrange(1, 100) <= 20:    
                 video = YouTube(busca(url))
                 if video.length > 1800:
                         mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
@@ -76,6 +77,7 @@ async def play(ctx, *, url):
             audio_stream.download(output_path='audio', filename=f"{title}.mp4")
         await ctx.send(f"{tuc()} 🎶▶ {video.title}")
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
+
          
 
 
@@ -86,6 +88,7 @@ def PlayNext(ctx):
         ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
         return
     if len(queue) > 0: 
+        global last_played_time
         url = queue.pop(0)
         displayQueue.pop(0)
         video = YouTube(url)
@@ -160,6 +163,16 @@ async def on_message(message):
          await bot.process_commands(message)
          return
      
+@bot.event
+async def on_voice_state_update(member, before, after):
+    voice_state = member.guild.voice_client
+    if voice_state is None:
+        return 
+
+    if len(voice_state.channel.members) == 1:
+        await voice_state.disconnect()
+
+            
 
 def chups(ctx):
     ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp3", options=FFMPEG_OPTIONS))
