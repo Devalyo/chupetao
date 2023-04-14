@@ -8,7 +8,7 @@ import re
 
 
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-bot = Bot(command_prefix='!', intents=discord.Intents.all())
+bot = Bot(command_prefix='!', intents=discord.Intents.all(), case_insensitive=True)
 
 @bot.event
 async def on_ready():
@@ -18,7 +18,7 @@ async def on_ready():
 queue = []
 displayQueue = []
 
-@bot.command()
+@bot.command(aliases=["p", "toca"])
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
     global last_played_time
