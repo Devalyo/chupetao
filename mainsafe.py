@@ -12,7 +12,7 @@ bot = Bot(command_prefix='!', intents=discord.Intents.all(), case_insensitive=Tr
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name} tuc tuc tuc!')
+    print(f'{bot.user.name}{tuc}!')
 
 
 queue = []
