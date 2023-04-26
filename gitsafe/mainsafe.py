@@ -12,7 +12,7 @@ bot = Bot(command_prefix='!', intents=discord.Intents.all(), case_insensitive=Tr
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name}{tuc}!')
+    print(f'{bot.user.name}{tuc()}!')
 
 
 queue = []
@@ -33,10 +33,10 @@ async def play(ctx, *, url):
                         return
                 queue.append(busca(url))
                 try:
-                    displayQueue.append(getTitle(url))
+                    displayQueue.append(video.title)
                 except:
                     asyncio.sleep(3)
-                    displayQueue.append(getTitle(url))
+                    displayQueue.append(video.title)
                 ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
                 return
 
@@ -50,20 +50,20 @@ async def play(ctx, *, url):
                 return
         queue.append(busca(url))
         try:
-             displayQueue.append(getTitle(url))
+             displayQueue.append(video.title)
         except:
             asyncio.sleep(3)
-            displayQueue.append(getTitle(url))
-        await ctx.send(f"{tuc()} ✔✔✔ {getTitle(url)}")
+            displayQueue.append(video.title)
+        await ctx.send(f"{tuc()} ✔✔✔ {video.title}")
         return
 
     if not ctx.voice_client.is_playing():
         video = YouTube(busca(url))
         try:
-            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', getTitle(url))
+            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', video.title)
         except:
             asyncio.sleep(3)
-            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', getTitle(url))
+            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', video.title)
             
         
         audio_stream = video.streams.filter(only_audio=True).first()
@@ -75,7 +75,7 @@ async def play(ctx, *, url):
                 await mensagem.edit(content=tuc())
                 return
             audio_stream.download(output_path='audio', filename=f"{title}.mp4")
-        await ctx.send(f"{tuc()} 🎶▶ {getTitle(url)}")
+        await ctx.send(f"{tuc()} 🎶▶ {video.title}")
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
 
          
@@ -93,10 +93,10 @@ def PlayNext(ctx):
         displayQueue.pop(0)
         video = YouTube(url)
         try:
-            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', getTitle(url))
+            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', video.title)
         except:
             asyncio.sleep(3)
-            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', getTitle(url))
+            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', video.title)
    
         audio_stream = video.streams.filter(only_audio=True).first()
         file_path = f'audio/{title}.mp4'
@@ -104,7 +104,7 @@ def PlayNext(ctx):
         if not os.path.exists(file_path):
                 audio_stream.download(output_path='audio', filename=f"{title}.mp4")
         
-        asyncio.run_coroutine_threadsafe(ctx.send(f"{tuc()} 🎶▶ {getTitle(url)}"), bot.loop)
+        asyncio.run_coroutine_threadsafe(ctx.send(f"{tuc()} 🎶▶ {video.title}"), bot.loop)
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
 
 
