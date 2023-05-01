@@ -15,13 +15,17 @@ async def on_ready():
     print(f'{bot.user.name}{tuc()}!')
 
 
-queue = []
+queue = dict()
 displayQueue = []
 
 @bot.command(aliases=["p", "toca"])
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
-    global last_played_time
+    if not ctx.guild.name in queue:
+        queue[ctx.guild.name] = dict()
+        queue[ctx.guild.name]['url'] = list()
+        queue[ctx.guild.name]['title'] = list()
+    
     if not ctx.voice_client:
         await voiceChannel.connect()
         if random.randrange(1, 100) <= 20:    
@@ -31,51 +35,60 @@ async def play(ctx, *, url):
                         await asyncio.sleep(8)
                         await mensagem.edit(content=tuc())
                         return
-                queue.append(busca(url))
+                
+                queue[ctx.guild.name]['url'].append(busca(url))
+
                 try:
-                    displayQueue.append(video.title)
+
+                    queue[ctx.guild.name]['title'].append(video.title)
+
                 except:
                     asyncio.sleep(3)
-                    displayQueue.append(video.title)
+                    queue[ctx.guild.name]['title'].append(video.title)
+                    
                 ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
                 return
 
     
     if ctx.voice_client.is_playing():
         video = YouTube(busca(url))
+        try:
+            ytTitle = video.title
+        except:
+            asyncio.sleep(3)
+            ytTitle = video.title
+    
         if video.length > 1800:
                 mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
                 await asyncio.sleep(8)
                 await mensagem.edit(content=tuc())
                 return
-        queue.append(busca(url))
+        queue[ctx.guild.name]['url'].append(busca(url))
         try:
-             displayQueue.append(video.title)
+            queue[ctx.guild.name]['title'].append(ytTitle)
         except:
             asyncio.sleep(3)
-            displayQueue.append(video.title)
-        await ctx.send(f"{tuc()} ✔✔✔ {video.title}")
+            queue[ctx.guild.name]['title'].append(ytTitle)
+
+        await ctx.send(f"{tuc()} ✔✔✔ {ytTitle}")
         return
 
     if not ctx.voice_client.is_playing():
         video = YouTube(busca(url))
-        try:
-            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', video.title)
-        except:
-            asyncio.sleep(3)
-            title = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', video.title)
-            
-        
+        ytTitle = video.title
+
+        pathTitle = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', ytTitle)
         audio_stream = video.streams.filter(only_audio=True).first()
-        file_path = f'audio/{title}.mp4'
+        file_path = f'audio/{pathTitle}.mp4'
         if not os.path.exists(file_path):
             if video.length > 1800:
                 mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
                 await asyncio.sleep(8)
                 await mensagem.edit(content=tuc())
                 return
-            audio_stream.download(output_path='audio', filename=f"{title}.mp4")
-        await ctx.send(f"{tuc()} 🎶▶ {video.title}")
+            audio_stream.download(output_path='audio', filename=f"{pathTitle}.mp4")
+
+        await ctx.send(f"{tuc()} 🎶▶ {ytTitle}")
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
 
          
@@ -84,27 +97,24 @@ async def play(ctx, *, url):
 def PlayNext(ctx):
 
     print("playing next...")
-    if random.randrange(1,100) <= 20:
+    if random.randrange(1,100) <= 10:
         ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
         return
+    
     if len(queue) > 0: 
-        global last_played_time
-        url = queue.pop(0)
-        displayQueue.pop(0)
+        url = queue[ctx.guild.name]['url'].pop(0)
+        queue[ctx.guild.name]['title'].pop(0)
         video = YouTube(url)
-        try:
-            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', video.title)
-        except:
-            asyncio.sleep(3)
-            title = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', video.title)
-   
+        ytTitle = video.title
+        pathTitle = re.sub('[\'^%#{\}=!$*?/()\n|\."]', '', ytTitle)
+
         audio_stream = video.streams.filter(only_audio=True).first()
-        file_path = f'audio/{title}.mp4'
+        file_path = f'audio/{pathTitle}.mp4'
 
         if not os.path.exists(file_path):
-                audio_stream.download(output_path='audio', filename=f"{title}.mp4")
+                audio_stream.download(output_path='audio', filename=f"{pathTitle}.mp4")
         
-        asyncio.run_coroutine_threadsafe(ctx.send(f"{tuc()} 🎶▶ {video.title}"), bot.loop)
+        asyncio.run_coroutine_threadsafe(ctx.send(f"{tuc()} 🎶▶ {ytTitle}"), bot.loop)
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
 
 
@@ -125,22 +135,26 @@ async def leave(ctx):
 @bot.command()
 async def remove(ctx, index):
     numero = int(index)
-    if numero > 0 and numero <= len(queue):
-        await ctx.send(f"{tuc()} ❌❌❌ {displayQueue[numero - 1]}")
-        del queue [numero - 1]
-        del displayQueue [numero - 1]
+    if numero > 0 and numero <= len(queue[ctx.guild.name]['url']):
+        await ctx.send(f"{tuc()} ❌❌❌ {queue[ctx.guild.name]['title'][numero - 1]}")
+        del queue[ctx.guild.name]['url'][numero - 1]
+        del queue[ctx.guild.name]['title'][numero - 1]
 
 
 @bot.command()
 async def fila(ctx):
+    
+    if not ctx.guild.name in queue:
+        await ctx.send(f"{tuc()} 💨")
+        return
 
-    if len(displayQueue) < 1:
+    if len(queue[ctx.guild.name]['title']) < 1:
         await ctx.send(f"{tuc()} 💨")
         return
 
     message = f"{tuc()}: ```\n"
-    for i in range(len(displayQueue)):
-        message += f"{i + 1} - {displayQueue[i]}\n"
+    for i in range(len(queue[ctx.guild.name]['title'])):
+        message += f"{i + 1} - {queue[ctx.guild.name]['title'][i]}\n"
     await ctx.send(message + '\n```')
           
 nameList = ["chupetas", "chupetão", "chupetao", "chupetasso", "chupetola"]
