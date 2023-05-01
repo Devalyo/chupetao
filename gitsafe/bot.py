@@ -101,7 +101,7 @@ def PlayNext(ctx):
         ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
         return
     
-    if len(queue) > 0: 
+    if len(queue[ctx.guild.name]['url']) > 0: 
         url = queue[ctx.guild.name]['url'].pop(0)
         queue[ctx.guild.name]['title'].pop(0)
         video = YouTube(url)
