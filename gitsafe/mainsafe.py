@@ -12,7 +12,7 @@ bot = Bot(command_prefix='!', intents=discord.Intents.all(), case_insensitive=Tr
 
 @bot.event
 async def on_ready():
-    print(f'{bot.user.name}{tuc()}!')
+    print(f'{bot.user.name} {tuc()}!')
 
 
 queue = dict()
@@ -190,6 +190,7 @@ async def on_voice_state_update(member, before, after):
 
 def chups(ctx):
     ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp3", options=FFMPEG_OPTIONS))
+
 
 
 bot.run('')
