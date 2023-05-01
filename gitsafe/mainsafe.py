@@ -22,8 +22,8 @@ displayQueue = []
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
     if not ctx.guild.name in queue:
-        queue[ctx.guild.name] = dict()
-        queue[ctx.guild.name]['url'] = list()
+        queue[ctx.guild.name]          = dict()
+        queue[ctx.guild.name]['url']   = list()
         queue[ctx.guild.name]['title'] = list()
     
     if not ctx.voice_client:
@@ -74,12 +74,12 @@ async def play(ctx, *, url):
         return
 
     if not ctx.voice_client.is_playing():
-        video = YouTube(busca(url))
+        video   = YouTube(busca(url))
         ytTitle = video.title
 
-        pathTitle = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', ytTitle)
+        pathTitle    = re.sub('[\'^%#{\}=!$*?/()|\n\."]', '', ytTitle)
         audio_stream = video.streams.filter(only_audio=True).first()
-        file_path = f'audio/{pathTitle}.mp4'
+        file_path    = f'audio/{pathTitle}.mp4'
         if not os.path.exists(file_path):
             if video.length > 1800:
                 mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
