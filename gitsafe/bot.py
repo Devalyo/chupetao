@@ -18,6 +18,7 @@ async def on_ready():
 queue = dict()
 displayQueue = []
 
+
 @bot.command(aliases=["p", "toca"])
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
@@ -26,6 +27,7 @@ async def play(ctx, *, url):
         queue[ctx.guild.name]['url']   = list()
         queue[ctx.guild.name]['title'] = list()
     
+
     if not ctx.voice_client:
         await voiceChannel.connect()
         if random.randrange(1, 100) <= 20:    
@@ -39,9 +41,7 @@ async def play(ctx, *, url):
                 queue[ctx.guild.name]['url'].append(busca(url))
 
                 try:
-
                     queue[ctx.guild.name]['title'].append(video.title)
-
                 except:
                     asyncio.sleep(3)
                     queue[ctx.guild.name]['title'].append(video.title)
@@ -49,7 +49,7 @@ async def play(ctx, *, url):
                 ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp4", options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
                 return
 
-    
+
     if ctx.voice_client.is_playing():
         video = YouTube(busca(url))
         try:
@@ -63,6 +63,7 @@ async def play(ctx, *, url):
                 await asyncio.sleep(8)
                 await mensagem.edit(content=tuc())
                 return
+        
         queue[ctx.guild.name]['url'].append(busca(url))
         try:
             queue[ctx.guild.name]['title'].append(ytTitle)
@@ -72,6 +73,7 @@ async def play(ctx, *, url):
 
         await ctx.send(f"{tuc()} ✔✔✔ {ytTitle}")
         return
+
 
     if not ctx.voice_client.is_playing():
         video   = YouTube(busca(url))
@@ -92,7 +94,6 @@ async def play(ctx, *, url):
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=file_path, options=FFMPEG_OPTIONS), after=lambda e: PlayNext(ctx))
 
          
-
 
 def PlayNext(ctx):
 
@@ -156,7 +157,47 @@ async def fila(ctx):
     for i in range(len(queue[ctx.guild.name]['title'])):
         message += f"{i + 1} - {queue[ctx.guild.name]['title'][i]}\n"
     await ctx.send(message + '\n```')
-          
+
+
+searching     = False
+searchResults = []
+SearchTitles  = []
+@bot.command()
+async def search(ctx, *, query):
+    global searchResults 
+    global searching
+    global searchTitles
+    searchResults = busca(query, search=True)
+    searchTitles  = []
+    mensagem = await ctx.send(f"{tuc()} ⌛⏲")
+    for i in searchResults:
+        searchTitles.append(getTitle(i))
+
+    message = f"{tuc()}: ```\n"
+    for i in range(len(searchResults)):
+        message += f"{i + 1} - {searchTitles[i]}\n"
+    await mensagem.edit(content=f"{message}\n```")
+    searching = True
+ 
+
+@bot.command(aliases=["c", "numero"])
+async def choose(ctx, choice):
+    global searching
+    global searchResults
+    global SearchTitles
+    if searching:
+        searching = False
+        for i in range(1, 11):
+            if str(i) == choice:
+                url = searchResults[i - 1]
+                searchTitles.clear()
+                searchResults.clear()
+                searching = False
+                await play(ctx, url=url)
+                return       
+    searching = False
+
+           
 nameList = ["chupetas", "chupetão", "chupetao", "chupetasso", "chupetola"]
 @bot.event
 async def on_message(message):
@@ -176,7 +217,8 @@ async def on_message(message):
      else:
          await bot.process_commands(message)
          return
-     
+
+
 @bot.event
 async def on_voice_state_update(member, before, after):
     voice_state = member.guild.voice_client
@@ -185,12 +227,6 @@ async def on_voice_state_update(member, before, after):
 
     if len(voice_state.channel.members) == 1:
         await voice_state.disconnect()
-
-            
-
-def chups(ctx):
-    ctx.voice_client.play(discord.FFmpegPCMAudio(source="audio/chupetas.mp3", options=FFMPEG_OPTIONS))
-
 
 
 bot.run('')
