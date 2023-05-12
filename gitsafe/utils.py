@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 def get_url():
     count = 1
-    API_KEY = ''
+    API_KEY = 'AIzaSyA0DFMAWqHPLO5mpGti1D9-CukFz8_FSs8'
     rand = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
     urlData = "https://www.googleapis.com/youtube/v3/search?key={}&maxResults={}&part=snippet&type=video&q={}".format(API_KEY,count,rand)
     webURL = urllib.request.urlopen(urlData)
@@ -42,10 +42,19 @@ def tuc(beast=False):
 
 
 def getTitle(url):
-
-    print(f"url é {url}")
+    
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
     title = (soup.find("title").text)[:-10]
+    
+    return title
+
+
+def spotifyToQuery(url):
+    
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    title = (soup.find("title").text)[:-10]
+    title = title.replace(" - song and lyrics by", "")
     
     return title

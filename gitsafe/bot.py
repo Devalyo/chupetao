@@ -22,12 +22,15 @@ displayQueue = []
 @bot.command(aliases=["p", "toca"])
 async def play(ctx, *, url):
     voiceChannel = ctx.author.voice.channel
+    
+    if "open.spotify.com" in url:
+        url = spotifyToQuery(url)
+
     if not ctx.guild.name in queue:
         queue[ctx.guild.name]          = dict()
         queue[ctx.guild.name]['url']   = list()
         queue[ctx.guild.name]['title'] = list()
     
-
     if not ctx.voice_client:
         await voiceChannel.connect()
         if random.randrange(1, 100) <= 20:    
@@ -184,7 +187,7 @@ async def search(ctx, *, query):
 async def choose(ctx, choice):
     global searching
     global searchResults
-    global SearchTitles
+    global SearchTitles 
     if searching:
         searching = False
         for i in range(1, 11):
