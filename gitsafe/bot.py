@@ -16,8 +16,6 @@ async def on_ready():
 
 
 queue = dict()
-displayQueue = []
-
 
 @bot.command(aliases=["p", "toca"])
 async def play(ctx, *, url):
