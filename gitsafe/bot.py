@@ -60,7 +60,7 @@ async def play(ctx, *, url):
             ytTitle = video.title
     
         if video.length > 1800:
-                mensagem = await ctx.send("Video muito longo. Seu filho da puta.")
+                mensagem = await ctx.send("Video muito longo.")
                 await asyncio.sleep(8)
                 await mensagem.edit(content=tuc())
                 return
@@ -230,4 +230,4 @@ async def on_voice_state_update(member, before, after):
         await voice_state.disconnect()
 
 
-bot.run('')
+bot.run('CHAVE DO BOT')
