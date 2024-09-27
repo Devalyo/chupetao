@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 def get_url():
     count = 1
-    API_KEY = 'AIzaSyA0DFMAWqHPLO5mpGti1D9-CukFz8_FSs8'
+    API_KEY = 'SUA API DO YOUTUBE'
     rand = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
     urlData = "https://www.googleapis.com/youtube/v3/search?key={}&maxResults={}&part=snippet&type=video&q={}".format(API_KEY,count,rand)
     webURL = urllib.request.urlopen(urlData)
